@@ -9,12 +9,13 @@ import javax.swing.JPanel;
 
 import entity.Player;
 import tile.TileManager;
+import object.SuperObject;
 
 public class GamePanel extends JPanel implements Runnable{
 
     // SCREEN SETTINGS
     final int originalTileSize = 16; //16x16 tile
-    final int scale = 3; //scale the tiles for larger resolution screens
+    public final int scale = 3; //scale the tiles for larger resolution screens
 
     public final int tileSize = originalTileSize * scale; //48x48 tile
     public final int maxScreenCol = 16;
@@ -34,7 +35,11 @@ public class GamePanel extends JPanel implements Runnable{
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
     Thread gameThread; //Keep time of game
+    public CollisionChecker cCheck = new CollisionChecker(this);
+    public AssetSetter aSetter = new AssetSetter(this);
     public Player player = new Player(this,keyH);
+    public SuperObject obj[] = new SuperObject[10];
+
 
     public GamePanel() {
 
@@ -44,6 +49,11 @@ public class GamePanel extends JPanel implements Runnable{
         this.addKeyListener(keyH);
         this.setFocusable(true);
         
+    }
+
+    public void setupGame() {
+
+        aSetter.setObject();
     }
 
     public void startGameThread() {
@@ -88,43 +98,6 @@ public class GamePanel extends JPanel implements Runnable{
         }
         
     }
-    // public void run() {
-
-    //     double drawInterval = 1000000000/FPS; // one billion nano seconds (1 second) divided by frames per second give draw interval ns/s * s/frames = ns/frames
-    //     double nextDrawTime = System.nanoTime() + drawInterval;
-
-
-    //     while(gameThread != null) {
-
-    //         // long currentTime = System.nanoTime(); //get the current time and store in variable
-    //         // System.out.println("Current Time: " + currentTime);
-
-    //         // 1 UPDATE: update information like character position
-    //         update();
-
-    //         // 2 DRAW: draw the screen with updated info
-    //         repaint();
-
-           
-    //         try {
-    //             double remainingTime = nextDrawTime - System.nanoTime();
-    //             remainingTime = remainingTime/1000000;
-
-    //             if(remainingTime >= 0) {
-    //                 Thread.sleep((long) remainingTime);
-    //             }
-
-    //             nextDrawTime = System.nanoTime() + drawInterval;
-
-    //         } catch (InterruptedException e) {
-    //             // TODO Auto-generated catch block
-    //             e.printStackTrace();
-    //         }
-    //     }
-
-        
-
-    // }
 
     public void update() {
 
@@ -134,11 +107,20 @@ public class GamePanel extends JPanel implements Runnable{
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D)g;
 
+        // paint tiles
         tileM.draw(g2);
-        player.draw(g2);
+
+        // paint object
+        for(int i=0; i<obj.length; i++) {
+            if(obj[i] != null) {
+                obj[i].draw(g2, this);
+            }
+        }
+
+        // paint player
+        player.draw(g2); 
 
         g2.dispose(); //saves some memory
     }

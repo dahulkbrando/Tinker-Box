@@ -2,6 +2,7 @@ package entity;
 
 // import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
@@ -25,6 +26,12 @@ public class Player extends Entity {
 
         screenX = (gp.screenWidth - gp.tileSize) / 2;
         screenY = (gp.screenHeight - gp.tileSize) / 2;
+
+        solidArea = new Rectangle();
+        solidArea.x = 2 * gp.scale;
+        solidArea.y = 7 * gp.scale;
+        solidArea.width = 12 * gp.scale;
+        solidArea.height = 9 * gp.scale;
 
         setDefaultValues();
         getPlayerImage();
@@ -60,31 +67,42 @@ public class Player extends Entity {
     }
 
     public void update() {
-        if(keyH.upPressed == true) {
+       
+        if(keyH.upPressed) {
             direction = "up";
-            worldY -= speed;
-            spriteUpdate();
+            if(!collisionOn) {
+                worldY -= speed;
+                spriteUpdate();
+            }
         }
-        else if(keyH.downPressed == true) {
+        else if(keyH.downPressed) {
             direction = "down";
-            worldY += speed;
-            spriteUpdate();
+            if(!collisionOn) {
+                worldY += speed;
+                spriteUpdate();
+            }
         }
-        else if(keyH.leftPressed == true) {
+        else if(keyH.leftPressed) {
             direction = "left";
-            worldX -= speed;
-            spriteUpdate();
+            if(!collisionOn) {
+                worldX -= speed;
+                spriteUpdate();
+            }
         }
-        else if(keyH.rightPressed == true) {
+        else if(keyH.rightPressed) {
             direction = "right";
-            worldX += speed;
-            spriteUpdate();
+            if(!collisionOn) {
+                worldX += speed;
+                spriteUpdate();
+            }
         }
         else {
             spriteState = 0;
         }
 
-        
+        // CHECK TILE COLLISIONS
+        collisionOn = false;
+        gp.cCheck.checkTile(this);
 
     }
 
@@ -94,11 +112,11 @@ public class Player extends Entity {
         if(spriteCounter > 12) {
             if(spriteState == 0 || spriteState == 1) {
                 spriteState = 2;
-                System.out.println("position2");
+                // System.out.println("position2");
             }
             else if(spriteState == 2) {
                 spriteState = 1;
-                System.out.println("position 1");
+                // System.out.println("position 1");
             }
             spriteCounter = 0;
         }
